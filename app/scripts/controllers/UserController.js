@@ -30,8 +30,7 @@ define( function( require ) {
 	};
 
 	var globalVars = {
-		_id: '52aaba1a4a451895ea2b6da1',
-		_users: null
+		_id: '52b24d8db7be7c96a64d7297',
 	};
 	return Marionette.Controller.extend( {
 		initialize: function( options ) {
@@ -54,6 +53,7 @@ define( function( require ) {
 		},
 
 		showProfile: function( id ) {
+			this._setActiveMenu();
 			var User = new models.User( {
 				selectedMenu: 'Profile',
 				_id: id
@@ -80,6 +80,9 @@ define( function( require ) {
 			} );
 
 			this.layout.contentRegion.show( view );
+			this.menuModel.set( {
+				'skillsCtr': 3
+			} );
 		},
 
 		showColleagues: function() {
@@ -94,20 +97,26 @@ define( function( require ) {
 
 			var self = this;
 			var users = [];
+
 			User.fetch( {
 				'success': function( model, response, options ) {
 					for ( var key in response ) {
 						users.push( response[ key ] );
 					}
 
-					users = _.without( users, _.findWhere( users, {
-						'_id': globalVars._id
+					users = _.without( _.where( users, {
+						'role' : '2'
+					} ), _.findWhere( users, {
+						'_id': globalVars._id,
 					} ) );
 
 					_.each( users, function( u ) {
 						//console.log( u );
 						if ( u && u.registrationDate ) {
 							u.registrationDate = new Date( Date.parse( u.registrationDate ) );
+						}else{
+							//to give a default date;
+							u.registrationDate = new Date();
 						}
 					} );
 
@@ -131,6 +140,7 @@ define( function( require ) {
 			var userLayout = new layouts.User();
 			this.listenTo( userLayout, 'render', function() {
 				this._showMenuAndContent( userLayout );
+				//this._initializeCount( userLayout);
 			}, this );
 
 			return userLayout;
@@ -138,18 +148,18 @@ define( function( require ) {
 
 		_showMenuAndContent: function() {
 			this._addMenu( this.layout.menuRegion );
-
+			this._updateMenuBadgeCount();
 			//this.showUsers( this.layout.contentRegion, 'Users' );
 		},
 
 		_addMenu: function() {
-			var User = new models.User( {
-				colleaguesCtr: 3,
-				skillsCtr: 3
+			 this.menuModel = new models.User( {
+				colleaguesCtr: 0,
+				skillsCtr: 0
 			} );
 
 			this.menu = new views.UserMenuView( {
-				model: User
+				model: this.menuModel
 			} );
 
 			this.layout.menuRegion.show( this.menu );
@@ -174,6 +184,22 @@ define( function( require ) {
 			if ( $.inArray( currentRoute, hashes ) === -1 ) {
 				$( menuOptions[ 0 ] ).parent().addClass( 'active' );
 			}
+		},
+
+		_updateMenuBadgeCount: function(){
+			//query for count
+			var self = this;
+			var User = new collections.Users();
+			User.baucis( {
+				'conditions': {
+					'role': '2'
+				}
+			} ).then( function( response ) {
+				var cCtr = (response.length > 0) ? response.length - 1 : 0;
+				self.menuModel.set( {
+					'colleaguesCtr': cCtr
+				} );
+			} );
 		}
 	} );
 } );

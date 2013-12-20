@@ -23,6 +23,10 @@ define( function( require ) {
 		System : require( 'views/layout/SystemLayout' )
 	};
 
+	var count = {
+		cnt : 0
+	};
+
 	// require views
 	var views = {
 		SystemMenuView     : require( 'views/item/SystemMenuView' ),
@@ -121,8 +125,6 @@ define( function( require ) {
 			this._showMenu( this.layout.menuRegion );
 			this.showAssessors();
 			this.showUsers( this.layout.contentRegion, 'Users' );
-
-
 		},
 
 		_showMenu: function() {
@@ -138,7 +140,6 @@ define( function( require ) {
 			this.layout.menuRegion.show( this.menu );
 
 		},
-
 
 		_setActiveMenu: function() {
 			var currentRoute = '#' + Backbone.history.fragment;

@@ -7,6 +7,7 @@ define( function( require ) {
 	var Vent       = require( 'Vent' );
 	var UserModel  = require( 'models/UserModel' );
 	var Session    = require( 'models/SessionModel' );
+	// var Reqres = require('')
 
 	var ErrorView       = require( 'views/ErrorView' );
 	var LoginLayoutTmpl = require( 'text!tmpl/views/layout/LoginLayout_tmpl.html' );
@@ -47,6 +48,7 @@ define( function( require ) {
 				'password' : password,
 				'success'  : function( resp ) {
 					console.log( resp );
+
 				},
 				'error'    : function( xhr, status, error ) {
 					console.log( error );

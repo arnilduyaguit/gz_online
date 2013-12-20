@@ -17,6 +17,8 @@ define( function ( require ) {
 				self[ key ] = value;
 			} );
 
+			this.listenTo(this.model, 'change', this.render);
+
 			return this;
 		},
 
